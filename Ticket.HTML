@@ -1,0 +1,118 @@
+
+<section class="ticket">
+    <h2>Ticket de Compra - Tonic Life</h2>
+    <p><strong>Fecha:</strong> <span id="fecha"></span></p>
+
+    <h3>Agregar Producto</h3>
+    <label for="producto">Producto:</label>
+    <select id="producto" onchange="actualizarPrecio()">
+        <option disabled selected>-- Selecciona --</option>
+        <option value="24 Shake Fresa">24 Shake Fresa</option>
+        <option value="G&C">G&C</option>
+        <option value="Colágeno Cápsulas">Colágeno Cápsulas</option>
+        <option value="Energy Gold">Energy Gold</option>
+        <option value="Tonic Clean">Tonic Clean</option>
+        <option value="Café Verde">Café Verde</option>
+        <option value="Ácido Hialurónico">Ácido Hialurónico</option>
+        <option value="Multivitamínico">Multivitamínico</option>
+        <option value="Omega 3 Plus">Omega 3 Plus</option>
+        <option value="Aloe Mix">Aloe Mix</option>
+    </select>
+
+    <label for="precio">Precio:</label>
+    <input type="number" id="precio" step="0.01" placeholder="0.00" readonly>
+
+    <label for="cantidad">Cantidad:</label>
+    <input type="number" id="cantidad" min="1" value="1">
+
+    <button onclick="agregarProducto()">Agregar</button>
+
+    <h3>Productos Seleccionados</h3>
+    <table id="tabla-productos">
+        <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Precio Unitario</th>
+            <th>Cantidad</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <p><strong>Subtotal:</strong> $<span id="subtotal">0.00</span></p>
+    <p><strong>IVA (16%):</strong> $<span id="iva">0.00</span></p>
+    <p><strong>Total:</strong> $<span id="total">0.00</span></p>
+
+    <button onclick="imprimirTicket()">Imprimir Ticket</button>
+</section>
+
+<footer>
+    <p>&copy; 2025 Tonic Life. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+    const precios = {
+        '24 Shake Fresa': 479.00,
+        'G&C': 628.00,
+        'Colágeno Cápsulas': 370.00,
+        'Energy Gold': 513.00,
+        'Tonic Clean': 50.00,
+        'Café Verde': 298.00,
+        'Ácido Hialurónico': 420.00,
+        'Multivitamínico': 310.00,
+        'Omega 3 Plus': 365.00,
+        'Aloe Mix': 289.00
+    };
+
+    document.getElementById('fecha').textContent = new Date().toLocaleDateString();
+
+    function actualizarPrecio() {
+        const producto = document.getElementById('producto').value;
+        document.getElementById('precio').value = precios[producto].toFixed(2);
+    }
+
+    function agregarProducto() {
+        const producto = document.getElementById('producto').value;
+        const precio = parseFloat(document.getElementById('precio').value);
+        const cantidad = parseInt(document.getElementById('cantidad').value);
+
+        if (!producto || isNaN(precio) || isNaN(cantidad) || cantidad <= 0) {
+            alert("Completa todos los campos correctamente.");
+            return;
+        }
+
+        const tabla = document.getElementById('tabla-productos').getElementsByTagName('tbody')[0];
+        const fila = tabla.insertRow();
+        const total = (precio * cantidad).toFixed(2);
+
+        fila.insertCell(0).textContent = producto;
+        fila.insertCell(1).textContent = precio.toFixed(2);
+        fila.insertCell(2).textContent = cantidad;
+        fila.insertCell(3).textContent = total;
+
+        calcularTotales();
+
+        document.getElementById('producto').selectedIndex = 0;
+        document.getElementById('precio').value = '';
+        document.getElementById('cantidad').value = 1;
+    }
+
+    function calcularTotales() {
+        let subtotal = 0;
+        const filas = document.getElementById('tabla-productos').getElementsByTagName('tbody')[0].rows;
+        for (let i = 0; i < filas.length; i++) {
+            subtotal += parseFloat(filas[i].cells[3].textContent);
+        }
+        const iva = subtotal * 0.16;
+        const total = subtotal + iva;
+
+        document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+        document.getElementById('iva').textContent = iva.toFixed(2);
+        document.getElementById('total').textContent = total.toFixed(2);
+    }
+
+    function imprimirTicket() {
+        window.print();
+    }
+</script>
